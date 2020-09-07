@@ -19,6 +19,10 @@ const Header: React.FC<HeaderProps> = ({ size = 'large' }: HeaderProps) => (
           <strong>Listagem</strong>
         </Link>
 
+        <Link to="/post">
+          <strong>Cadastrar</strong>
+        </Link>
+
         <Link to="/import">
           <strong>Importar</strong>
         </Link>
