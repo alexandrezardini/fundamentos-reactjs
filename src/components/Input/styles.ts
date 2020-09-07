@@ -8,6 +8,7 @@ interface ContainerProps {
 }
 
 export const Container = styled.div<ContainerProps>`
+position: relative;
   background: #ffffff;
   border-radius: 10px;
   border: 2px solid #fff;
@@ -22,6 +23,8 @@ export const Container = styled.div<ContainerProps>`
     margin-top: 8px;
   }
 
+
+
   ${props =>
     props.isErrored &&
     css`
@@ -31,14 +34,20 @@ export const Container = styled.div<ContainerProps>`
   ${props =>
     props.isFocused &&
     css`
-      color: #FF872C;
-      border-color: #5636D3;
+      color: #ff872c;
+      border-color: #5636d3;
+      span {
+        transform: scale(0.6) translateY(-10px);
+      }
     `}
 
   ${props =>
     props.isFielled &&
     css`
-      color: #FF872C;
+      color: #ff872c;
+      span {
+        transform: scale(0.6) translateY(-10px);
+      }
     `}
 
   input {
@@ -54,6 +63,26 @@ export const Container = styled.div<ContainerProps>`
 
   svg {
     margin-right: 16px;
+  }
+`;
+
+export const Label = styled.label`
+  span {
+    color: #666360;
+    height: 57px;
+    position: absolute;
+    top: 0;
+    left: 50px;
+
+    display: flex;
+    align-items: center;
+
+    transform-origin: 0% 0%;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+
+    transition: 0.2s ease-in-out;
   }
 `;
 
