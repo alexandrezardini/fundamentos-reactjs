@@ -8,7 +8,8 @@ interface ContainerProps {
 }
 
 export const Container = styled.div<ContainerProps>`
-position: relative;
+
+  position: relative;
   background: #ffffff;
   border-radius: 10px;
   border: 2px solid #fff;
@@ -78,7 +79,7 @@ export const Label = styled.label`
     align-items: center;
 
     transform-origin: 0% 0%;
-    font-size: 18px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 300;
 

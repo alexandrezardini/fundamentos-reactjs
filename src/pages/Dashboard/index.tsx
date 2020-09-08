@@ -6,6 +6,7 @@ import outcome from '../../assets/outcome.svg';
 import total from '../../assets/total.svg';
 
 import api from '../../services/api';
+import { useToast } from '../../hooks/toast';
 
 import Header from '../../components/Header';
 
@@ -37,39 +38,56 @@ interface Balance {
 }
 
 const Dashboard: React.FC = () => {
+  const { addToast } = useToast();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState<Balance>({} as Balance);
 
   useEffect(() => {
     async function loadTransactions(): Promise<void> {
-      const response = await api.get('transactions');
+      try {
+        const response = await api.get('transactions');
 
-      const transactionsFormatted = response.data.transactions.map(
-        (transaction: Transaction) => ({
-          ...transaction,
-          formattedValue: formatValue(transaction.value),
-          formattedDate: new Date(transaction.created_at).toLocaleDateString(
-            'pt-br',
-          ),
-        }),
-      );
+        const transactionsFormatted = response.data.transactions.map(
+          (transaction: Transaction) => ({
+            ...transaction,
+            formattedValue: formatValue(transaction.value),
+            formattedDate: new Date(transaction.created_at).toLocaleDateString(
+              'pt-br',
+            ),
+          }),
+        );
 
-      const balanceFormatted = {
-        income: formatValue(response.data.balance.income),
-        outcome: formatValue(response.data.balance.outcome),
-        total: formatValue(response.data.balance.total),
-      };
+        const balanceFormatted = {
+          income: formatValue(response.data.balance.income),
+          outcome: formatValue(response.data.balance.outcome),
+          total: formatValue(response.data.balance.total),
+        };
 
-      setTransactions(transactionsFormatted);
-      setBalance(balanceFormatted);
+        setTransactions(transactionsFormatted);
+        setBalance(balanceFormatted);
+      } catch (err) {
+        addToast({
+          type: 'error',
+          title: 'Erro em carregar as transações',
+          description: 'Verifique a conexão com a internet',
+        });
+      }
     }
 
     loadTransactions();
-  }, [transactions]);
+  }, [addToast]);
 
-  const handleDeleteTransaction = useCallback(async (id: string) => {
-    await api.delete(`transactions/${id}`);
-  }, []);
+  const handleDeleteTransaction = useCallback(
+    async (id: string) => {
+      await api.delete(`transactions/${id}`);
+
+      addToast({
+        type: 'error',
+        title: 'Transação deletada',
+      });
+    },
+    [addToast],
+  );
 
   return (
     <>

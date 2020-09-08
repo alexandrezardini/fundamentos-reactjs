@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import filesize from 'filesize';
@@ -6,6 +6,7 @@ import filesize from 'filesize';
 import Header from '../../components/Header';
 import FileList from '../../components/FileList';
 import Upload from '../../components/Upload';
+import { useToast } from '../../hooks/toast';
 
 import { Container, Title, ImportFileContainer, Footer } from './styles';
 
@@ -19,10 +20,11 @@ interface FileProps {
 }
 
 const Import: React.FC = () => {
+  const { addToast } = useToast();
   const [uploadedFiles, setUploadedFiles] = useState<FileProps[]>([]);
   const history = useHistory();
 
-  async function handleUpload(): Promise<void> {
+  const handleUpload = useCallback(async (): Promise<void> => {
     const data = new FormData();
 
     const file = uploadedFiles[0];
@@ -32,13 +34,22 @@ const Import: React.FC = () => {
     try {
       await api.post('/transactions/import', data);
 
+      addToast({
+        type: 'success',
+        title: 'Trasação cadastrada!',
+      });
+
       history.push('/');
     } catch (err) {
-      console.log(err.response.error);
+      addToast({
+        type: 'error',
+        title: 'Erro ao importar',
+        description: 'Verifique se o arquivo está sm .csv',
+      });
     }
-  }
+  }, [addToast, history, uploadedFiles]);
 
-  function submitFile(files: File[]): void {
+  const submitFile = useCallback(async (files: File[]) => {
     const uploadFiles = files.map(file => ({
       file,
       name: file.name,
@@ -46,7 +57,7 @@ const Import: React.FC = () => {
     }));
 
     setUploadedFiles(uploadFiles);
-  }
+  }, []);
 
   return (
     <>

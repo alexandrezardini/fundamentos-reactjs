@@ -43,12 +43,11 @@ const PostTransaction: React.FC = () => {
 
         await api.post('transactions', data);
 
-        history.push('/');
-
         addToast({
           type: 'success',
           title: 'Trasação cadastrada!',
         });
+        history.push('/');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -60,8 +59,8 @@ const PostTransaction: React.FC = () => {
 
         addToast({
           type: 'error',
-          title: 'Erro no cadastro',
-          description: 'Ocorreu um erro durante o cadastro, tente novamente',
+          title: 'Erro ao importar',
+          description: 'Verifique se o arquivo está sm .csv',
         });
       }
     },
