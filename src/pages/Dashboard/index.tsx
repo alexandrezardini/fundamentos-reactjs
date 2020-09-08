@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { FiTrash2 } from 'react-icons/fi';
 
 import income from '../../assets/income.svg';
 import outcome from '../../assets/outcome.svg';
@@ -10,7 +11,13 @@ import Header from '../../components/Header';
 
 import formatValue from '../../utils/formatValue';
 
-import { Container, CardContainer, Card, TableContainer } from './styles';
+import {
+  Container,
+  CardContainer,
+  Card,
+  TableContainer,
+  DeleteButton,
+} from './styles';
 
 interface Transaction {
   id: string;
@@ -58,6 +65,10 @@ const Dashboard: React.FC = () => {
     }
 
     loadTransactions();
+  }, [transactions]);
+
+  const handleDeleteTransaction = useCallback(async (id: string) => {
+    await api.delete(`transactions/${id}`);
   }, []);
 
   return (
@@ -115,6 +126,13 @@ const Dashboard: React.FC = () => {
 
                     <td>{transaction.category.title}</td>
                     <td>{transaction.formattedDate}</td>
+                    <td>
+                      <DeleteButton
+                        onClick={() => handleDeleteTransaction(transaction.id)}
+                      >
+                        <FiTrash2 size={20} />
+                      </DeleteButton>
+                    </td>
                   </tr>
                 </tbody>
               ))}
