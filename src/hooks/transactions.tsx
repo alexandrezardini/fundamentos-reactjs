@@ -1,5 +1,14 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/ban-types */
-import React, { createContext, useCallback, useState, useContext } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useState,
+  useContext,
+  useRef,
+} from 'react';
+import * as Yup from 'yup';
+import { FormHandles } from '@unform/core';
 import api from '../services/api';
 import formatValue from '../utils/formatValue';
 
@@ -40,6 +49,7 @@ const TransactionContext = createContext<TransactionContextData>(
 );
 
 const TransactionProvider: React.FC = ({ children }) => {
+  const formRef = useRef<FormHandles>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState<Balance>({} as Balance);
 
@@ -66,17 +76,21 @@ const TransactionProvider: React.FC = ({ children }) => {
     setBalance(balanceFormatted);
   }, []);
 
-  const postTransaction = useCallback(
-    async ({ title, value, type, category }: PostTransaction) => {
-      await api.post('transactions', {
-        title,
-        value,
-        type,
-        category,
-      });
-    },
-    [],
-  );
+  const postTransaction = useCallback(async (data: PostTransaction) => {
+    formRef.current?.setErrors({});
+    const schema = Yup.object().shape({
+      title: Yup.string().required('Título obrigatório'),
+      value: Yup.number().required('E-mail obrigatório'),
+      type: Yup.string().required('E-mail obrigatório'),
+      categoryTitle: Yup.string().required('Categoria Obrigatória'),
+    });
+
+    await schema.validate(data, {
+      abortEarly: false,
+    });
+
+    await api.post('transactions', data);
+  }, []);
 
   const deleteTransaction = useCallback(
     async (id: string) => {
